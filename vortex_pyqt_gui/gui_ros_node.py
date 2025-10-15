@@ -3,12 +3,13 @@ import numpy as np
 import time
 import subprocess
 
-from std_msgs.msg import Int32
-from std_msgs.msg import Float32
+from std_msgs.msg import Int32, Float32, String
+from .auv_data_subscriber import AUVDataSubscriber
 
 import importlib
 
 from PyQt6 import QtGui
+from PyQt6.QtCore import QObject, pyqtSignal, QTimer
 
 
 def get_msg_class(type_str):
@@ -18,13 +19,23 @@ def get_msg_class(type_str):
 
 class MyGuiNode(Node):
     def __init__(self, ui):
-        super().__init__("ros2_hmi_node")
+
+        super().__init__("Vortex_GUI_Node")
         self.ui = ui
-        
-        session_name = "add_two_ints_server"
-        result = subprocess.run(f"tmux has-session -t {session_name}", shell=True)
-        if result.returncode == 0:
-            subprocess.run(f"tmux kill-session -t {session_name}", shell=True)
-        else:
-            self.get_logger().info("Session is not running")
+
+        self.get_logger().info("Node setup begun")
+
+        # Initialize the subscriber node
+        self.data_subscriber = AUVDataSubscriber()
+
+        # Set up a timer to update the label every 100 ms
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timer_callback)
+        self.timer.start(100)
+
+        # Sanity check
+        self.get_logger().info("Node setup properly")
+
+    def timer_callback(self):
+        pass
 

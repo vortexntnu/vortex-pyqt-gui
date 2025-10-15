@@ -8,6 +8,7 @@ from threading import Thread
 from .gui_layout import Ui_MainWindow
 from .gui_ros_node import MyGuiNode
 
+
 def main(args=None):
     rclpy.init(args=args)
     app = QtWidgets.QApplication(sys.argv)
@@ -21,6 +22,7 @@ def main(args=None):
     # node spin on the main thread
     executor = MultiThreadedExecutor()
     executor.add_node(Vortex_Gui_Node)
+    executor.add_node(Vortex_Gui_Node.data_subscriber)
 
     thread = Thread(target=executor.spin)
     thread.start()
