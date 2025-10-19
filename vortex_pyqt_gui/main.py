@@ -1,8 +1,10 @@
+import os
 import sys
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 
 from PyQt6 import QtWidgets
+from PyQt6.QtGui import QIcon
 from threading import Thread
 
 from .gui_layout import Ui_MainWindow
@@ -12,9 +14,19 @@ from .gui_ros_node import MyGuiNode
 def main(args=None):
     rclpy.init(args=args)
     app = QtWidgets.QApplication(sys.argv)
+    
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(base_dir, "10845966.png")
+    app.setWindowIcon(QIcon(icon_path))
+
+    print(f"Using icon path: {icon_path}")
+    print(f"Exists? {os.path.exists(icon_path)}")
+
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    MainWindow.setWindowIcon(QIcon(icon_path))
+    
 
     Vortex_Gui_Node  = MyGuiNode(ui)
 

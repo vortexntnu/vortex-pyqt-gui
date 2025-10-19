@@ -6,23 +6,779 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1162</width>
-    <height>1026</height>
+    <width>1564</width>
+    <height>732</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Simple GUI ROS</string>
+   <string>Vortex AUV GUI</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>10845966.png</normaloff>10845966.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="ExampleText">
-      <property name="text">
-       <string>Hei :3</string>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="page1">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="2" column="0">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="styleSheet">
+           <string notr="true">background-color: #999999</string>
+          </property>
+          <property name="title">
+           <string>Control</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="2" column="0">
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="0">
+            <widget class="QWidget" name="positionalDataWidget_2" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Thrusters:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QWidget" name="positionalDataWidget" native="true">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="4" column="3">
+               <widget class="QGroupBox" name="pitchGrpBox">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>Pitch</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="4">
+               <widget class="QGroupBox" name="rollGrpBox">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>Roll</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2" colspan="3">
+               <widget class="QGroupBox" name="rendererGrpBox">
+                <property name="minimumSize">
+                 <size>
+                  <width>600</width>
+                  <height>300</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>Render</string>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_10"/>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QGroupBox" name="xPositionGrpBox">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>x-Position</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QGroupBox" name="yPositionGrpBox">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>y-Position</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QGroupBox" name="zPositionGrpBox">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>z-Position</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QGroupBox" name="yawGrpBox">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #505050</string>
+                </property>
+                <property name="title">
+                 <string>Yaw</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QGroupBox" name="VehicleStatusGrpBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: #999999</string>
+          </property>
+          <property name="title">
+           <string>Vehicle Status</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="1" column="0">
+            <widget class="QWidget" name="widget_3" native="true">
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="10" column="0">
+               <widget class="QLabel" name="SSHConnectionsLabel">
+                <property name="text">
+                 <string>SSH:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="latencyLabel2">
+                <property name="text">
+                 <string>Latency:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="QPushButton" name="pushButton">
+                <property name="text">
+                 <string>Connect</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="passwordLabel">
+                <property name="text">
+                 <string>Password:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="2">
+               <widget class="QPushButton" name="pushButton_2">
+                <property name="text">
+                 <string>Connect</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QLineEdit" name="lineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="communicationsLabel">
+                <property name="text">
+                 <string>Communications:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="QLineEdit" name="SSHInputEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QLineEdit" name="SSHPasswordEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="3">
+               <widget class="QFrame" name="indicatorLightWidget">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>10</width>
+                  <height>10</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: red;
+border-radius: 5px;</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
+                <property name="midLineWidth">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="latencyLabel">
+                <property name="text">
+                 <string>Latency:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" colspan="4">
+               <widget class="Line" name="communicationsSeperator">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="1">
+               <widget class="QLineEdit" name="lineEdit_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="SSHLabel">
+                <property name="text">
+                 <string>SSH:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="passwordLabel2">
+                <property name="text">
+                 <string>Password:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="3">
+               <widget class="QFrame" name="indicatorLightWidget_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>10</width>
+                  <height>10</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: red;
+border-radius: 5px;</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>1</number>
+                </property>
+                <property name="midLineWidth">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0" colspan="4">
+               <widget class="Line" name="communicationsSeperator2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="latnecyReadingLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QLabel" name="packetLossLabel">
+                <property name="text">
+                 <string>Packet Loss:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QLabel" name="packetLossReadingLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="latencyReadingLabel2">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="1">
+               <widget class="QLabel" name="packetLossLabel2">
+                <property name="text">
+                 <string>Packet Loss</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QLabel" name="packetLossReadingLabel2">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="3" column="0">
+            <widget class="QWidget" name="hullStatusWidget" native="true">
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="3" column="1">
+               <widget class="QLabel" name="internalPressureLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="hullStatusLabel">
+                <property name="text">
+                 <string>Hull Status</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="externalLabel">
+                <property name="text">
+                 <string>External:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QLabel" name="externalTemperatureLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="3">
+               <widget class="Line" name="hullStatusSeperator">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="temperatureLabel">
+                <property name="text">
+                 <string>Temperature:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QLabel" name="externalPressureLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="internalTemperatureLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="pressureLabel">
+                <property name="text">
+                 <string>Pressure:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="internalLabel">
+                <property name="text">
+                 <string>Internal:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QWidget" name="batteryWidget" native="true">
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="2" column="4">
+               <widget class="QLabel" name="SoHLabel">
+                <property name="text">
+                 <string>SoH:   </string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="B2Label">
+                <property name="text">
+                 <string>B2</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QLabel" name="B1SoHLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QProgressBar" name="B1ProgressBar">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="value">
+                 <number>99</number>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="chargeLabel">
+                <property name="styleSheet">
+                 <string notr="true">background-color: #606060</string>
+                </property>
+                <property name="text">
+                 <string>Charge:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QLabel" name="currentLabel">
+                <property name="text">
+                 <string>Current:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QLabel" name="B2CurrentLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="B1Label">
+                <property name="text">
+                 <string>B1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QLabel" name="B2VoltageLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="batteryLabel">
+                <property name="text">
+                 <string>Battery</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QLabel" name="B1CurrentLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QProgressBar" name="B2ProgressBar">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="value">
+                 <number>24</number>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="B1VoltageLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="voltageLabel">
+                <property name="text">
+                 <string>Voltage:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="4">
+               <widget class="QLabel" name="B2SoHLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="QLabel" name="humidityLabel">
+                <property name="text">
+                 <string>Humidity:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="5">
+               <widget class="QLabel" name="B1HumidityLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="5">
+               <widget class="QLabel" name="B2HumidityLabel">
+                <property name="text">
+                 <string>N/A</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="6">
+               <widget class="Line" name="batterySeparator">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="styleSheet">
+           <string notr="true">background-color: #999999</string>
+          </property>
+          <property name="title">
+           <string>Optics Feed</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="1">
+            <widget class="QGroupBox" name="camGrpBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <property name="title">
+              <string>Front Camera</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="0">
+               <widget class="QLabel" name="camLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QGroupBox" name="camDownGrpBox">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: #606060</string>
+             </property>
+             <property name="title">
+              <string>Bottom camera</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="0">
+               <widget class="QLabel" name="camDownLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_2"/>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1564</width>
+     <height>22</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <resources/>
