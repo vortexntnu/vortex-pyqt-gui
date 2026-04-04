@@ -8,6 +8,7 @@ from PyQt5.QtCore import QByteArray, QProcess, Qt
 from PyQt5.QtGui import QGuiApplication, QTextCharFormat, QColor
 from PyQt5.QtWidgets import QMainWindow, QWidget
 import yaml
+from .rosbag import RosbagRecorder
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -27,25 +28,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         one_window = True;
         if one_window:
-            main_tab = self.centralWidget()          # grab what setupUi built
+            main_tab = self.centralWidget()
         
             tabs = QtWidgets.QTabWidget()
             tabs.addTab(main_tab, "Controls")
-            tabs.addTab(self.second_window, "Video")  # QWidget goes directly in
+            tabs.addTab(self.second_window, "Video")
             
             self.setCentralWidget(tabs)
         else:
             self.second_window.show_on_screen(1)
+            
+        self.vortex_logo.setPixmap(QtGui.QPixmap(os.path.join(get_package_share_directory("gui"), "resources", "logo.png")).scaled(400, 400, Qt.KeepAspectRatio))
 
         # VARIABLES
         self.DEFAULT_COLOR_FONT = self.terminal_output.currentCharFormat()
         self.processes: dict[str, QProcess] = {}
         
         self.build_param_panel()
+        self.build_topic_selector()
         
-        # SSH CONNECTION (tmux session)
-        if SSH_HOST:
-            self.start_ssh_tmux()
         
         # ROS NODE SETUP
         self.ros_node = QProcess(self)
@@ -59,22 +60,106 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.waypoint_abort.clicked.connect(self.abort_waypoint)
         self.start_fsm.clicked.connect(lambda checked, k="fsm": self.on_proc_toggle("fsm", START_FSM, True))
    
-    def start_ssh_tmux(self):
-        try:
-            import subprocess
+            
+    def build_topic_selector(self):
+        self.rosbag_recorders: dict[str, "RosbagRecorder"] = {}
+        self.refresh_btn.clicked.connect(self.fetch_topics)
+        self.rosbag_topics.activated.connect(self._on_topic_selected)  # type: ignore
+        self.rosbag_selected_topics.itemDoubleClicked.connect(self._remove_topic)  # type: ignore
+        self.rosbag_start.clicked.connect(self.start_rosbag)
 
-            cmd = [
-                "tmux", "new-session", "-d", "-s", "name",
-                "ssh", "-i", SSH_KEY,
-                "-o", "StrictHostKeyChecking=no",
-                "-o", "ServerAliveInterval=60",
-                "-o", "ServerAliveCountMax=10",
-                SSH_HOST
-            ]
-            subprocess.run(cmd, check=False)
-            self.add_terminal_output("SSH Connected")
-        except Exception as e:
-            self.add_terminal_output(f"SSH Failed to connect: {e}")
+        self._topic_proc = QProcess(self)
+        self._topic_proc.setProcessChannelMode(QProcess.MergedChannels)  # type: ignore
+        self._topic_proc.finished.connect(self._on_topics_fetched)  # type: ignore
+
+        self.fetch_topics()
+
+
+    def fetch_topics(self):
+        if self._topic_proc.state() != QProcess.NotRunning: return 
+        self._topic_proc.start("/bin/bash", ["-c", "source /opt/ros/humble/setup.bash && ros2 topic list"])
+        
+    def start_rosbag(self):
+        topics = self.get_selected_topics()
+        name = self.rosbag_name.text().strip() or f"bag_{len(self.rosbag_recorders)}"
+
+        if not topics: self.add_terminal_output("[WARN] No topics selected for recording"); return
+
+        recorder = RosbagRecorder(topics=topics, compression=True, name=name)
+        recorder.start()
+        self.rosbag_recorders[name] = recorder
+        self._add_rosbag_row(name)
+        self.add_terminal_output(f"[INFO] Started rosbag '{name}': {topics}")
+        
+    def _add_rosbag_row(self, name: str):
+        item = QtWidgets.QListWidgetItem()
+        item.setSizeHint(QtCore.QSize(0, 36))
+
+        row_widget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout(row_widget)
+        layout.setContentsMargins(4, 2, 4, 2)
+        layout.setSpacing(8)
+
+        label = QtWidgets.QLabel(name)
+        label.setStyleSheet("color: white;")
+
+        stop_btn = QtWidgets.QPushButton("Stop")
+        stop_btn.setFixedWidth(70)
+        stop_btn.setStyleSheet("background-color: red; color: white;")
+        stop_btn.clicked.connect(lambda _, n=name: self.stop_rosbag(n))  # type: ignore
+
+        layout.addWidget(label, stretch=1)
+        layout.addWidget(stop_btn)
+
+        self.rosbag_active_list.addItem(item)
+        self.rosbag_active_list.setItemWidget(item, row_widget)
+
+        item.setData(Qt.UserRole, name)  # type: ignore
+
+    def stop_rosbag(self, name: str):
+        recorder = self.rosbag_recorders.pop(name, None)
+        if recorder is not None:
+            recorder.stop() 
+            self.add_terminal_output(f"[INFO] Stopped rosbag '{name}'")
+
+        for i in range(self.rosbag_active_list.count()):
+            item = self.rosbag_active_list.item(i)
+            if item.data(Qt.UserRole) == name:  # type: ignore
+                self.rosbag_active_list.takeItem(i)
+                break
+
+    def _on_topics_fetched(self, exit_code: int, _):
+        raw = bytes(self._topic_proc.readAllStandardOutput()).decode("utf-8", errors="replace")
+
+        if exit_code != 0:
+            self.add_terminal_output(f"[ERROR] ros2 topic list failed: {raw.strip()}")
+            return
+
+        topics = sorted(line.strip() for line in raw.splitlines() if line.strip())
+        if not topics:
+            return
+
+        self.rosbag_topics.blockSignals(True)
+        self.rosbag_topics.clear()
+        for topic in topics:
+            self.rosbag_topics.addItem(topic)
+        self.rosbag_topics.setCurrentIndex(-1)
+        self.rosbag_topics.blockSignals(False)
+
+
+    def _on_topic_selected(self, index: int):
+        topic = self.rosbag_topics.itemText(index)
+        if topic not in [self.rosbag_selected_topics.item(i).text() for i in range(self.rosbag_selected_topics.count())]:
+            self.rosbag_selected_topics.addItem(topic)
+        self.rosbag_topics.setCurrentIndex(-1)
+
+
+    def _remove_topic(self, item: QtWidgets.QListWidgetItem):
+        self.rosbag_selected_topics.takeItem(self.rosbag_selected_topics.row(item))
+
+
+    def get_selected_topics(self) -> list[str]:
+        return [self.rosbag_selected_topics.item(i).text() for i in range(self.rosbag_selected_topics.count())]
    
    
     ###################

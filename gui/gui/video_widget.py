@@ -1,37 +1,29 @@
-import gi
-
-gi.require_version("Gst", "1.0")
-from gi.repository import Gst, GObject # type: ignore
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtWidgets import QWidget
+from .config import CAMERA_FRONT, CAMERA_BOTTOM, PIPELINE_DESCRIPTION
 
-
-
+import gi
+gi.require_version("Gst", "1.0")
+from gi.repository import Gst, GObject
 GObject.threads_init()
 Gst.init(None)
-
-from .config import CAMERA_FRONT, CAMERA_BOTTOM
 
 
 class GstFrameSource(QtCore.QObject):
     frame = QtCore.pyqtSignal(QtGui.QImage)
     info = QtCore.pyqtSignal(int, int, float)     # width, height, aspect
 
-    def __init__(self, pipeline_desc: str, appsink_name: str = "sink", parent=None):
+    def __init__(self, port: int, parent=None):
         super().__init__(parent)
-        self.pipeline_desc = pipeline_desc
-        self.appsink_name = appsink_name
+        self.port = port
         self.pipeline = None
         self.appsink = None
         self._sent_info = False
 
     def start(self):
-        self.pipeline = Gst.parse_launch(self.pipeline_desc)
-        self.appsink = self.pipeline.get_by_name(self.appsink_name)
-        if not self.appsink:
-            raise RuntimeError(f"appsink '{self.appsink_name}' not found in pipeline")
+        self.pipeline = Gst.parse_launch(PIPELINE_DESCRIPTION.replace("PORT", str(self.port)))
+        self.appsink = self.pipeline.get_by_name("sink")
 
         self.appsink.set_property("emit-signals", True)
         self.appsink.connect("new-sample", self._on_new_sample)
@@ -61,9 +53,7 @@ class GstFrameSource(QtCore.QObject):
         frame_bytes = bytes(mapinfo.data)
         buf.unmap(mapinfo)
 
-        img = QtGui.QImage(
-            frame_bytes, width, height, 3 * width, QtGui.QImage.Format_RGB888
-        )
+        img = QtGui.QImage(frame_bytes, width, height, 3 * width, QtGui.QImage.Format_RGB888)
         img = img.copy()
 
         if not self._sent_info:
@@ -79,7 +69,6 @@ class VideoWidget(QWidget):
         super().__init__(parent)
 
         self.content = content_widget
-        self._drag_pos = None
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(2, 2, 2, 2)
@@ -103,7 +92,7 @@ class StatisticsWindow(QtWidgets.QWidget):
         super().__init__(parent)
         self.setWindowTitle("Video")
 
-        ports = [CAMERA_FRONT, CAMERA_BOTTOM]
+        ports = [CAMERA_BOTTOM, CAMERA_FRONT]
         self.cam_labels = []
         self.cam_widgets = []
         self.cam_sources = []
@@ -117,20 +106,13 @@ class StatisticsWindow(QtWidgets.QWidget):
 
         for _, (port, pos) in enumerate(zip(ports, positions)):
             label = QtWidgets.QLabel(self)
-            label.setAlignment(QtCore.Qt.AlignCenter)
-            label.setStyleSheet("background: #000;")
+            label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            label.setStyleSheet("background: #333;")
 
             widget = VideoWidget(label, self)
 
-            pipeline_desc = (
-                f'udpsrc port={port} caps="application/x-rtp,media=video,clock-rate=90000,'
-                f'encoding-name=H265,payload=96" '
-                "! rtph265depay ! h265parse ! avdec_h265 ! videoconvert "
-                "! video/x-raw,format=RGB "
-                "! appsink name=sink sync=false max-buffers=3 drop=true"
-            )
 
-            source = GstFrameSource(pipeline_desc, appsink_name="sink", parent=self)
+            source = GstFrameSource(port, parent=self)
             source.frame.connect(
                 lambda image, lbl=label: self.update_pixmap(image, lbl)
             )
@@ -159,8 +141,7 @@ class StatisticsWindow(QtWidgets.QWidget):
         pm = QtGui.QPixmap.fromImage(image)
         scaled = pm.scaled(
             cam.size(),
-            QtCore.Qt.KeepAspectRatio,
-            QtCore.Qt.SmoothTransformation,
+            QtCore.Qt.AspectRatioMode.KeepAspectRatio
         )
         cam.setPixmap(scaled)
 
