@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtWidgets import QWidget
-from .config import CAMERA_FRONT, CAMERA_BOTTOM, PIPELINE_DESCRIPTION
+from .config import CAMERA_FRONT, CAMERA_BOTTOM, SONAR
 
 import gi
 gi.require_version("Gst", "1.0")
@@ -14,7 +14,7 @@ class GstFrameSource(QtCore.QObject):
     frame = QtCore.pyqtSignal(QtGui.QImage)
     info = QtCore.pyqtSignal(int, int, float)     # width, height, aspect
 
-    def __init__(self, port: int, parent=None):
+    def __init__(self, port: str, parent=None):
         super().__init__(parent)
         self.port = port
         self.pipeline = None
@@ -22,7 +22,7 @@ class GstFrameSource(QtCore.QObject):
         self._sent_info = False
 
     def start(self):
-        self.pipeline = Gst.parse_launch(PIPELINE_DESCRIPTION.replace("PORT", str(self.port)))
+        self.pipeline = Gst.parse_launch(self.port)
         self.appsink = self.pipeline.get_by_name("sink")
 
         self.appsink.set_property("emit-signals", True)
@@ -92,7 +92,7 @@ class StatisticsWindow(QtWidgets.QWidget):
         super().__init__(parent)
         self.setWindowTitle("Video")
 
-        ports = [CAMERA_BOTTOM, CAMERA_FRONT]
+        ports = [CAMERA_BOTTOM, CAMERA_FRONT, SONAR]
         self.cam_labels = []
         self.cam_widgets = []
         self.cam_sources = []

@@ -195,6 +195,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._topic_proc.finished.connect(self._on_topics_fetched)  # type: ignore
 
         self.fetch_topics()
+        
+    """
+    def start_ssh_tmux(self):
+        try:
+            import subprocess
+
+            cmd = [
+                "tmux", "new-session", "-d", "-s", "name",
+                "ssh", "-i", SSH_KEY,
+                "-o", "StrictHostKeyChecking=no",
+                "-o", "ServerAliveInterval=60",
+                "-o", "ServerAliveCountMax=10",
+                SSH_HOST
+            ]
+            subprocess.run(cmd, check=False)
+            self.add_terminal_output("SSH Connected")
+        except Exception as e:
+            self.add_terminal_output(f"SSH Failed to connect: {e}")
+    """
 
 
     def fetch_topics(self):

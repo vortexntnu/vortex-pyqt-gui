@@ -31,6 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             main_tab = self.centralWidget()
         
             tabs = QtWidgets.QTabWidget()
+            tabs.setStyleSheet("color: white;")
             tabs.addTab(main_tab, "Controls")
             tabs.addTab(self.second_window, "Video")
             

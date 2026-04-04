@@ -12,5 +12,25 @@ camera:
       ! video/x-raw,format=BGR
       ! appsink name=sink sync=false max-buffers=3 drop=true
 
+camera:
+  front_camera: >-
+      udpsrc port=5000 caps="application/x-rtp,media=video,clock-rate=90000,
+      encoding-name=H265,payload=96"
+      ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert
+      ! video/x-raw,format=BGR
+      ! appsink name=sink sync=false max-buffers=3 drop=true
+  bottom_camera: >-
+      udpsrc port=5001 caps="application/x-rtp,media=video,clock-rate=90000,
+      encoding-name=H265,payload=96"
+      ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert
+      ! video/x-raw,format=BGR
+      ! appsink name=sink sync=false max-buffers=3 drop=true
+  sonar: >-
+      udpsrc port=5002 caps="application/x-rtp,media=video,clock-rate=90000,
+      encoding-name=H265,payload=96"
+      ! rtph265depay ! h265parse ! avdec_h265 ! videoconvert
+      ! video/x-raw,format=uint8
+      ! appsink name=sink sync=false max-buffers=3 drop=true
+
 ros_node:
   script: "gui/gui/gui_node.py"
