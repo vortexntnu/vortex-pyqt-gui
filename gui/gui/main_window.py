@@ -16,7 +16,7 @@ from .gui_ui import Ui_MainWindow
 from .video_widget import StatisticsWindow
 
 
-from .config import WAYPOINT_LAUNCH, ROS_NODE_LAUNCH, START_FSM, SSH_HOST, SSH_KEY
+from .config import WAYPOINT_LAUNCH, ROS_NODE_LAUNCH, START_FSM
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):

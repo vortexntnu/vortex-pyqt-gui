@@ -1,10 +1,6 @@
 drone:
-  setup_script: "/home/drone/ros2_ws/install/setup.bash"
-  gui_node: "/home/drone/ros2_ws/src/vortex_pyqt_gui/gui/gui_node.py"
   start_fsm: "ros2 service call /orca/pipeline_fsm/start_mission std_srvs/srv/Trigger {}"
   waypoint_launch: "ros2 launch waypoint_manager waypoint_manager.launch.py"
-  ssh_host: ""
-  ssh_key: ""
 
 camera:
   front_camera: 5000
@@ -17,4 +13,4 @@ camera:
       ! appsink name=sink sync=false max-buffers=3 drop=true
 
 ros_node:
-  script: "/home/luna/ros2_ws/src/vortex_pyqt_gui/gui/gui/gui_node.py"
+  script: "gui/gui/gui_node.py"
