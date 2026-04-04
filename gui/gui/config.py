@@ -18,6 +18,4 @@ START_FSM = CONFIG["drone"]["start_fsm"]
 CAMERA_FRONT = CONFIG["camera"]["front_camera"]
 CAMERA_BOTTOM = CONFIG["camera"]["bottom_camera"]
 SONAR = CONFIG["camera"]["sonar"]
-PIPELINE_DESCRIPTION = CONFIG["camera"]["pipeline_description"]
-
 
