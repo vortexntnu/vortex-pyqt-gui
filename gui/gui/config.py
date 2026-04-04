@@ -19,4 +19,5 @@ CAMERA_FRONT = CONFIG["camera"]["front_camera"]
 CAMERA_BOTTOM = CONFIG["camera"]["bottom_camera"]
 SSH_HOST = CONFIG["drone"]["ssh_host"]
 SSH_KEY = CONFIG["drone"]["ssh_key"]
+PIPELINE_DESCRIPTION = CONFIG["camera"]["pipeline_description"]
 

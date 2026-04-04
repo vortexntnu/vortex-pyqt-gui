@@ -10,7 +10,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 
 from geometry_msgs.msg import PointStamped, Point, Quaternion
-from vortex_msgs.msg import Waypoint
+from vortex_msgs.msg import Waypoint, WaypointMode
 from vortex_msgs.action import WaypointManager
 
 from vortex_utils.python_utils import euler_to_quat
@@ -60,8 +60,9 @@ class GuiNode(Node):
             rpy = msg["rpy"]
 
             goal = WaypointManager.Goal()
+            wp_mode = WaypointMode()
             wp = Waypoint()
-            wp.mode = int(msg["mode"])
+            
 
             wp.pose.position = Point(
                 x=float(pos["x"]),
@@ -75,7 +76,9 @@ class GuiNode(Node):
                 float(rpy["yaw"]),
             )
             wp.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
-
+            wp_mode.mode = msg["mode"]
+            wp.waypoint_mode = wp_mode
+            
             goal.waypoints = [wp]
             goal.convergence_threshold = float(msg["convergence_cm"])
             goal.persistent = False

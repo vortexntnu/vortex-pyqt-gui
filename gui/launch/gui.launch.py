@@ -9,7 +9,7 @@ def generate_launch_description():
         SetEnvironmentVariable("XDG_SESSION_TYPE", "x11"),
         Node(
             package="gui",
-            executable="gui_test",
+            executable="gui",
             name="gui",
             output="screen",
         ),

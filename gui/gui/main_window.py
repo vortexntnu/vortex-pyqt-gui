@@ -81,6 +81,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def start_rosbag(self):
         topics = self.get_selected_topics()
+        self.rosbag_selected_topics.clear()
         name = self.rosbag_name.text().strip() or f"bag_{len(self.rosbag_recorders)}"
 
         if not topics: self.add_terminal_output("[WARN] No topics selected for recording"); return

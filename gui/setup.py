@@ -15,6 +15,7 @@ setup(
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'scripts'), glob('scripts/*.sh')),
         (os.path.join("share", package_name, "config"), glob('config/*.yaml')),
+        (os.path.join("share", package_name, "resources"), glob('resource/*.png')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -30,7 +31,9 @@ setup(
     entry_points={
         'console_scripts': [
             'gui = gui.main_window:main',
-            'gui_test = gui.test:main',
+            'gui_test = gui.gui_test:main',
+            'gui_video = gui.video_widget:main',
+            'test = gui.test:main',
         ],
     },
 )
