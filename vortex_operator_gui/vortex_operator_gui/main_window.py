@@ -111,12 +111,12 @@ class MainWindow(QMainWindow):
 
         kill_row = QHBoxLayout()
         kill_row.addWidget(QLabel('Killswitch:'))
-        engage = QPushButton('Engage (kill)')
-        engage.clicked.connect(lambda: self.node.set_killswitch(True))
-        release = QPushButton('Release (arm)')
-        release.clicked.connect(lambda: self.node.set_killswitch(False))
-        kill_row.addWidget(engage)
-        kill_row.addWidget(release)
+        on_btn = QPushButton('ON')
+        on_btn.clicked.connect(lambda: self.node.set_killswitch(True))
+        off_btn = QPushButton('OFF')
+        off_btn.clicked.connect(lambda: self.node.set_killswitch(False))
+        kill_row.addWidget(on_btn)
+        kill_row.addWidget(off_btn)
         layout.addLayout(kill_row)
 
         mission_row = QHBoxLayout()
@@ -261,7 +261,7 @@ class MainWindow(QMainWindow):
         self.mode_label.setText(OPERATION_MODE_NAMES.get(value, f'UNKNOWN ({value})'))
 
     def _on_killswitch(self, engaged):
-        self.kill_label.setText('ENGAGED' if engaged else 'RELEASED')
+        self.kill_label.setText('ON' if engaged else 'OFF')
         self.kill_label.setStyleSheet(
             'color: #c0392b;' if engaged else 'color: #27ae60;')
 
