@@ -71,7 +71,7 @@ class GuiNode(Node):
             'set_killswitch': self._p('services.set_killswitch', 'set_killswitch'),
             'get_operation_mode': self._p('services.get_operation_mode', 'get_operation_mode'),
             'start_mission': self._p('services.start_mission', 'start_mission'),
-            'reset_origin': self._p('services.reset_origin', 'reset_origin'),
+            'reset_odom_origin': self._p('services.reset_odom_origin', 'reset_odom_origin'),
             'waypoint_manager': self._p('action_servers.waypoint_manager', 'waypoint_manager'),
             'mission_wipe': self._p('topics.mission_wipe', 'mission/wipe'),
         }
@@ -81,10 +81,10 @@ class GuiNode(Node):
         self._set_op_cli = self.create_client(SetOperationMode, names['set_operation_mode'])
         self._set_kill_cli = self.create_client(SetKillswitch, names['set_killswitch'])
         self._get_op_cli = self.create_client(GetOperationMode, names['get_operation_mode'])
-        # NOTE: start_mission / reset_origin service *types* were not found in the
-        # workspace; std_srvs/Trigger is assumed. Change here if they differ.
+        # reset_odom_origin is std_srvs/Trigger (odom_transformer.cpp). start_mission
+        # type was not found in the workspace; std_srvs/Trigger is assumed there.
         self._start_mission_cli = self.create_client(Trigger, names['start_mission'])
-        self._reset_origin_cli = self.create_client(Trigger, names['reset_origin'])
+        self._reset_origin_cli = self.create_client(Trigger, names['reset_odom_origin'])
         self._wp_action = ActionClient(self, WaypointManager, names['waypoint_manager'])
         self._current_goal = None
 
