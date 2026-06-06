@@ -13,8 +13,14 @@ from PyQt5.QtCore import QObject, pyqtSignal
 
 from rclpy.action import ActionClient
 from rclpy.node import Node
+from rclpy.qos import (
+    QoSDurabilityPolicy,
+    QoSHistoryPolicy,
+    QoSProfile,
+    QoSReliabilityPolicy,
+)
 
-from std_msgs.msg import Empty
+from std_msgs.msg import Bool, Empty
 from std_srvs.srv import Trigger
 
 from geometry_msgs.msg import Point, Quaternion
@@ -74,6 +80,8 @@ class GuiNode(Node):
             'reset_odom_origin': self._p('services.reset_odom_origin', 'reset_odom_origin'),
             'waypoint_manager': self._p('action_servers.waypoint_manager', 'waypoint_manager'),
             'mission_wipe': self._p('topics.mission_wipe', 'mission/wipe'),
+            'operation_mode': self._p('topics.operation_mode', 'operation_mode'),
+            'killswitch': self._p('topics.killswitch', 'killswitch'),
         }
 
         self.signals = RosSignals()
@@ -89,6 +97,23 @@ class GuiNode(Node):
         self._current_goal = None
 
         self._wipe_pub = self.create_publisher(Empty, names['mission_wipe'], 10)
+
+        # Live state also arrives over topics, which the operation_mode_manager
+        # publishes on every change (event-driven) — far faster than the 1 Hz
+        # service poll. The topics are Reliable/Volatile/KeepLast(1), so we must
+        # match that QoS, and a late-joining GUI gets nothing until the next
+        # change: the service poll (refresh_status) still provides the initial
+        # sync and the connection/liveness signal. The two are complementary.
+        status_qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE,
+            durability=QoSDurabilityPolicy.VOLATILE,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=1,
+        )
+        self._op_mode_sub = self.create_subscription(
+            OperationMode, names['operation_mode'], self._on_op_mode_msg, status_qos)
+        self._kill_sub = self.create_subscription(
+            Bool, names['killswitch'], self._on_kill_msg, status_qos)
 
         self.get_logger().info(
             f'Operator GUI node started (namespace: {self.get_namespace()})')
@@ -123,9 +148,21 @@ class GuiNode(Node):
         self.signals.killswitch.emit(resp.killswitch_status)
         self.signals.status.emit(f"{label}: {'OK' if resp.success else 'rejected'}")
 
+    # -- live status subscriptions -------------------------------------------
+    def _on_op_mode_msg(self, msg: OperationMode):
+        """Instant operation-mode update pushed by the operation_mode_manager."""
+        self.signals.operation_mode.emit(msg.operation_mode)
+
+    def _on_kill_msg(self, msg: Bool):
+        """Instant killswitch update pushed by the operation_mode_manager."""
+        self.signals.killswitch.emit(msg.data)
+
     # -- status polling ------------------------------------------------------
     def refresh_status(self):
-        """Poll get_operation_mode; drives the live mode/killswitch display."""
+        """Poll get_operation_mode for initial sync, periodic resync and the
+        connection/liveness signal. Live changes arrive faster via the topic
+        subscriptions above; this guarantees the display is correct even for a
+        GUI that started after the manager (the topics are volatile)."""
         if not self._get_op_cli.service_is_ready():
             self.signals.connected.emit(False)
             return
