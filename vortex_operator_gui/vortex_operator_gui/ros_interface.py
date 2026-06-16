@@ -72,6 +72,8 @@ class GuiNode(Node):
         # Endpoint names come from the robot config (e.g. nautilus.yaml), loaded
         # by the launch file. Names are relative; the node's namespace (set at
         # launch, e.g. /nautilus) resolves them to /nautilus/<name>.
+        self.mission = self._p('mission', '')
+
         names = {
             'set_operation_mode': self._p('services.set_operation_mode', 'set_operation_mode'),
             'set_killswitch': self._p('services.set_killswitch', 'set_killswitch'),
@@ -82,6 +84,10 @@ class GuiNode(Node):
             'mission_wipe': self._p('topics.mission_wipe', 'mission/wipe'),
             'operation_mode': self._p('topics.operation_mode', 'operation_mode'),
             'killswitch': self._p('topics.killswitch', 'killswitch'),
+            'start_pipeline_following_trigger': self._p(
+                'services.start_pipeline_following_trigger',
+                'start_pipeline_following_trigger'),
+            'end_of_pipeline': self._p('services.end_of_pipeline', 'end_of_pipeline'),
         }
 
         self.signals = RosSignals()
@@ -93,6 +99,9 @@ class GuiNode(Node):
         # type was not found in the workspace; std_srvs/Trigger is assumed there.
         self._start_mission_cli = self.create_client(Trigger, names['start_mission'])
         self._reset_origin_cli = self.create_client(Trigger, names['reset_odom_origin'])
+        self._start_pipeline_following_trigger_cli = self.create_client(
+            Trigger, names['start_pipeline_following_trigger'])
+        self._end_of_pipeline_cli = self.create_client(Trigger, names['end_of_pipeline'])
         self._wp_action = ActionClient(self, WaypointManager, names['waypoint_manager'])
         self._current_goal = None
 
@@ -197,6 +206,13 @@ class GuiNode(Node):
 
     def start_mission(self):
         self._call(self._start_mission_cli, Trigger.Request(), 'Start mission')
+
+    def start_pipeline_following_trigger(self):
+        self._call(self._start_pipeline_following_trigger_cli,
+                   Trigger.Request(), 'Start pipeline following trigger')
+
+    def end_of_pipeline(self):
+        self._call(self._end_of_pipeline_cli, Trigger.Request(), 'End of pipeline')
 
     def reset_origin(self):
         self._call(self._reset_origin_cli, Trigger.Request(), 'Reset origin')

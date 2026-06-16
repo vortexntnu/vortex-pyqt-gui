@@ -69,6 +69,8 @@ class MainWindow(QMainWindow):
         root = QVBoxLayout(central)
         root.addWidget(self._build_status_group())
         root.addWidget(self._build_command_group())
+        if node.mission == 'pipeline':
+            root.addWidget(self._build_pipeline_group())
         root.addWidget(self._build_waypoint_group())
         root.addWidget(self._build_status_log())
 
@@ -130,6 +132,34 @@ class MainWindow(QMainWindow):
         mission_row.addWidget(reset)
         mission_row.addWidget(wipe)
         layout.addLayout(mission_row)
+        return box
+
+    # -- pipeline mission controls -------------------------------------------
+    def _build_pipeline_group(self):
+        box = QGroupBox('Pipeline mission')
+        layout = QVBoxLayout(box)
+
+        row = QHBoxLayout()
+
+        start_mission_btn = QPushButton('Start mission')
+        start_mission_btn.setToolTip('services.start_mission — kicks off the whole mission')
+        start_mission_btn.clicked.connect(self.node.start_mission)
+
+        start_following_btn = QPushButton('Start pipeline following')
+        start_following_btn.setToolTip(
+            'services.start_pipeline_following_trigger — releases the gate to '
+            'start pipeline following')
+        start_following_btn.clicked.connect(self.node.start_pipeline_following_trigger)
+
+        end_pipeline_btn = QPushButton('End of pipeline')
+        end_pipeline_btn.setToolTip(
+            'services.end_of_pipeline — tell the FSM the pipeline has ended')
+        end_pipeline_btn.clicked.connect(self.node.end_of_pipeline)
+
+        row.addWidget(start_mission_btn)
+        row.addWidget(start_following_btn)
+        row.addWidget(end_pipeline_btn)
+        layout.addLayout(row)
         return box
 
     # -- waypoint sender -----------------------------------------------------

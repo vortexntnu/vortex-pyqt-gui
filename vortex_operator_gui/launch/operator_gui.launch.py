@@ -10,6 +10,7 @@ from launch_ros.actions import Node
 def launch_setup(context, *args, **kwargs):
     drone = LaunchConfiguration('drone').perform(context)
     namespace = LaunchConfiguration('namespace').perform(context)
+    mission = LaunchConfiguration('mission').perform(context)
 
     drone_params = os.path.join(
         get_package_share_directory('auv_setup'),
@@ -23,7 +24,7 @@ def launch_setup(context, *args, **kwargs):
             name='operator_gui_node',
             namespace=namespace,
             output='screen',
-            parameters=[drone_params],
+            parameters=[drone_params, {'mission': mission}],
         ),
     ]
 
@@ -34,5 +35,9 @@ def generate_launch_description():
                               description='Robot config in auv_setup/config/robots to load.'),
         DeclareLaunchArgument('namespace', default_value='nautilus',
                               description='Namespace the robot runs under.'),
+        DeclareLaunchArgument('mission', default_value='',
+                              description=(
+                                  'Mission-specific panel to show. '
+                                  'Use "pipeline" to enable the Pipeline mission controls.')),
         OpaqueFunction(function=launch_setup),
     ])
